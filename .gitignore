@@ -1,0 +1,21 @@
+# Build
+bin/
+obj/
+out/
+
+# User secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# IDE
+.vs/
+.vscode/
+*.user
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# EF migrations temp
+*.sqlite

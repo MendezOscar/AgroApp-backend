@@ -1,0 +1,64 @@
+using AgroApp.Application.Features.Irrigation.Commands;
+using AgroApp.Application.Features.Irrigation.DTOs;
+using AgroApp.Application.Features.Irrigation.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace AgroApp.API.Controllers;
+
+[ApiController]
+[Authorize]
+[Route("api/crops/{cropId}/irrigation")]
+public class IrrigationController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public IrrigationController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<IrrigationDto>>> GetAll(Guid cropId)
+    {
+        var result = await _mediator.Send(new GetIrrigationsQuery(cropId));
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<IrrigationDto>> GetById(Guid cropId, Guid id)
+    {
+        var result = await _mediator.Send(new GetIrrigationByIdQuery(cropId, id));
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<IrrigationDto>> Create(Guid cropId, [FromBody] CreateIrrigationRequest request)
+    {
+        var command = new CreateIrrigationCommand(
+            cropId, request.Method, request.VolumeLiters,
+            request.DurationMin, request.AppliedAt, request.Notes);
+
+        var result = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetById), new { cropId, id = result.Id }, result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<IrrigationDto>> Update(Guid cropId, Guid id, [FromBody] UpdateIrrigationRequest request)
+    {
+        var command = new UpdateIrrigationCommand(
+            cropId, id, request.Method, request.VolumeLiters,
+            request.DurationMin, request.AppliedAt, request.Notes);
+
+        var result = await _mediator.Send(command);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid cropId, Guid id)
+    {
+        var result = await _mediator.Send(new DeleteIrrigationCommand(cropId, id));
+        return result ? NoContent() : NotFound();
+    }
+}
