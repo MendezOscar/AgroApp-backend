@@ -6,7 +6,7 @@ using AgroApp.Domain.Common;
 
 namespace AgroApp.Domain.Entities
 {
-    public class CropImage : BaseEntity
+    public class CropImage : BaseLog
     {
         public Guid CropId { get; set; }
         public Guid UserId { get; set; }

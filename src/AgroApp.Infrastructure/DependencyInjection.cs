@@ -1,6 +1,7 @@
 using AgroApp.Application.Common.Interfaces;
 using AgroApp.Infrastructure.Identity;
 using AgroApp.Infrastructure.Persistence;
+using AgroApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,8 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IStorageService, R2StorageService>();
+
 
         return services;
     }
