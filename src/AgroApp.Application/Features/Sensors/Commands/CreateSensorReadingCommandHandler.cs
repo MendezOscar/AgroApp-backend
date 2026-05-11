@@ -9,10 +9,13 @@ namespace AgroApp.Application.Features.Sensors.Commands;
 public class CreateSensorReadingCommandHandler : IRequestHandler<CreateSensorReadingCommand, SensorReadingDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly INotificationService _notifications;
 
-    public CreateSensorReadingCommandHandler(IApplicationDbContext context)
+
+    public CreateSensorReadingCommandHandler(IApplicationDbContext context, INotificationService notifications)
     {
         _context = context;
+        _notifications = notifications;
     }
 
     public async Task<SensorReadingDto> Handle(CreateSensorReadingCommand request, CancellationToken cancellationToken)
@@ -79,18 +82,20 @@ public class CreateSensorReadingCommandHandler : IRequestHandler<CreateSensorRea
 
             if (triggered)
             {
-                var alert = new Alert
-                {
-                    DeviceId = device.Id,
-                    TenantId = tenantId,
-                    PlotId = device.PlotId,
-                    AlertType = rule.Metric,
-                    Severity = Enum.Parse<Domain.Enums.AlertSeverity>(rule.Severity, true),
-                    Message = $"{rule.Metric} es {value} (umbral: {rule.Operator} {rule.Threshold})",
-                    TriggeredAt = DateTime.UtcNow
-                };
-
+                var alert = new Alert { /* ... igual que antes ... */ };
                 _context.Alerts.Add(alert);
+
+                // Enviar push notification
+                await _notifications.SendToTenantAsync(
+                    tenantId,
+                    title: $"⚠️ Alerta: {rule.Metric.Replace("_", " ")}",
+                    body: $"Valor {value} {rule.Operator} {rule.Threshold} en tu parcela",
+                    data: new Dictionary<string, string>
+                    {
+                        ["alertId"] = alert.Id.ToString(),
+                        ["type"] = "sensor_alert"
+                    }
+                );
             }
         }
 

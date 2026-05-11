@@ -29,7 +29,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IStorageService, R2StorageService>();
-
+        services.AddScoped<INotificationService, FcmNotificationService>();
 
         return services;
     }

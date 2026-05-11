@@ -21,6 +21,7 @@ public class AgroAppDbContext(DbContextOptions<AgroAppDbContext> options) : DbCo
     public DbSet<AlertRule> AlertRules => Set<AlertRule>();
     public DbSet<CropImage> CropImages => Set<CropImage>();
     public DbSet<CostEntry> CostEntries => Set<CostEntry>();
+    public DbSet<FcmToken> FcmTokens => Set<FcmToken>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

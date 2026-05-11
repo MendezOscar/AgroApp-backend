@@ -19,6 +19,8 @@ public interface IApplicationDbContext
     DbSet<AlertRule> AlertRules { get; }
     DbSet<CropImage> CropImages { get; }
     DbSet<CostEntry> CostEntries { get; }
+    DbSet<FcmToken> FcmTokens { get; }
+
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
