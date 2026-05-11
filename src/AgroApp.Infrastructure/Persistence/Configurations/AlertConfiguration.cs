@@ -10,12 +10,16 @@ public class AlertConfiguration : IEntityTypeConfiguration<Alert>
     {
         builder.ToTable("alerts");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.AlertType).IsRequired().HasMaxLength(100);
-        builder.Property(x => x.Severity).HasConversion<string>().HasMaxLength(50);
-        builder.Property(x => x.Message).IsRequired();
+        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.TenantId).HasColumnName("tenant_id");
+        builder.Property(x => x.DeviceId).HasColumnName("device_id");
+        builder.Property(x => x.PlotId).HasColumnName("plot_id");
+        builder.Property(x => x.AlertType).IsRequired().HasMaxLength(100).HasColumnName("alert_type");
+        builder.Property(x => x.Severity).HasConversion<string>().HasMaxLength(50).HasColumnName("severity");
+        builder.Property(x => x.Message).IsRequired().HasColumnName("message");
+        builder.Property(x => x.IsRead).HasColumnName("is_read").HasDefaultValue(false);
         builder.Property(x => x.TriggeredAt).HasColumnName("triggered_at");
         builder.Property(x => x.ReadAt).HasColumnName("read_at");
-        builder.Ignore(x => x.IsRead); // Ya tiene nombre correcto con snake_case
 
         builder.HasOne(x => x.Tenant).WithMany()
             .HasForeignKey(x => x.TenantId).OnDelete(DeleteBehavior.Cascade);

@@ -5,16 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgroApp.Application.Features.Alerts.Queries;
 
-public class GetAlertsQueryHandler : IRequestHandler<GetAlertsQuery, List<AlertDto>>
+public class GetAlertsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser) : IRequestHandler<GetAlertsQuery, List<AlertDto>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly ICurrentUserService _currentUser;
-
-    public GetAlertsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
-    {
-        _context = context;
-        _currentUser = currentUser;
-    }
+    private readonly IApplicationDbContext _context = context;
+    private readonly ICurrentUserService _currentUser = currentUser;
 
     public async Task<List<AlertDto>> Handle(GetAlertsQuery request, CancellationToken cancellationToken)
     {
