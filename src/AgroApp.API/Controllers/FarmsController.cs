@@ -4,6 +4,8 @@ using AgroApp.Application.Features.Farms.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -20,6 +22,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<FarmDto>>> GetAll()
     {
         var result = await _mediator.Send(new GetFarmsQuery());
@@ -27,6 +30,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<FarmDto>> GetById(Guid id)
     {
         var result = await _mediator.Send(new GetFarmByIdQuery(id));
@@ -34,6 +38,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<FarmDto>> Create([FromBody] CreateFarmRequest request)
     {
         var command = new CreateFarmCommand(
@@ -46,6 +51,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<FarmDto>> Update(Guid id, [FromBody] UpdateFarmRequest request)
     {
         var command = new UpdateFarmCommand(
@@ -58,6 +64,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _mediator.Send(new DeleteFarmCommand(id));

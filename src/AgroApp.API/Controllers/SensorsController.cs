@@ -4,6 +4,8 @@ using AgroApp.Application.Features.Sensors.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -20,6 +22,7 @@ public class SensorsController : ControllerBase
 
     // Sensor Devices
     [HttpGet("api/plots/{plotId}/sensors")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<SensorDeviceDto>>> GetAll(Guid plotId)
     {
         var result = await _mediator.Send(new GetSensorDevicesQuery(plotId));
@@ -27,6 +30,7 @@ public class SensorsController : ControllerBase
     }
 
     [HttpPost("api/plots/{plotId}/sensors")]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<SensorDeviceDto>> Create(Guid plotId, [FromBody] CreateSensorDeviceRequest request)
     {
         var command = new CreateSensorDeviceCommand(
@@ -39,7 +43,7 @@ public class SensorsController : ControllerBase
 
     // Sensor Readings — No requiere auth (lo llama el ESP32 con API key en Fase 2)
     [HttpPost("api/sensors/{deviceId}/readings")]
-    [AllowAnonymous]
+    [AllowAnonymous] // ESP32 no tiene token
     public async Task<ActionResult<SensorReadingDto>> CreateReading(Guid deviceId, [FromBody] CreateSensorReadingRequest request)
     {
         var command = new CreateSensorReadingCommand(
@@ -52,6 +56,7 @@ public class SensorsController : ControllerBase
     }
 
     [HttpGet("api/sensors/{deviceId}/readings")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<SensorReadingDto>>> GetReadings(Guid deviceId, [FromQuery] int limit = 100)
     {
         var result = await _mediator.Send(new GetSensorReadingsQuery(deviceId, limit));
@@ -59,6 +64,7 @@ public class SensorsController : ControllerBase
     }
 
     [HttpGet("api/sensors/{deviceId}/readings/latest")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<SensorReadingDto>> GetLatestReading(Guid deviceId)
     {
         var result = await _mediator.Send(new GetLatestSensorReadingQuery(deviceId));

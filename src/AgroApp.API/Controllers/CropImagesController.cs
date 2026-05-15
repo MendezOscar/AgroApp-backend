@@ -4,6 +4,8 @@ using AgroApp.Application.Features.CropImages.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -20,6 +22,7 @@ public class CropImagesController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<CropImageDto>>> GetAll(Guid cropId)
     {
         var result = await _mediator.Send(new GetCropImagesQuery(cropId));
@@ -28,6 +31,7 @@ public class CropImagesController : ControllerBase
 
     [HttpPost]
     [RequestSizeLimit(10 * 1024 * 1024)] // 10MB máximo
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<CropImageDto>> Upload(
         Guid cropId,
         IFormFile file,
@@ -56,6 +60,7 @@ public class CropImagesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<IActionResult> Delete(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new DeleteCropImageCommand(cropId, id));

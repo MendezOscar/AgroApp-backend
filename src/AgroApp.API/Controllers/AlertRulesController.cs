@@ -3,6 +3,8 @@ using AgroApp.Application.Features.Alerts.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -19,6 +21,7 @@ public class AlertRulesController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<AlertRuleDto>> Create([FromBody] CreateAlertRuleRequest request)
     {
         var command = new CreateAlertRuleCommand(

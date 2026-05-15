@@ -4,6 +4,8 @@ using AgroApp.Application.Features.Irrigation.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -20,6 +22,7 @@ public class IrrigationController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<IrrigationDto>>> GetAll(Guid cropId)
     {
         var result = await _mediator.Send(new GetIrrigationsQuery(cropId));
@@ -27,6 +30,8 @@ public class IrrigationController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
+
     public async Task<ActionResult<IrrigationDto>> GetById(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new GetIrrigationByIdQuery(cropId, id));
@@ -34,6 +39,7 @@ public class IrrigationController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<IrrigationDto>> Create(Guid cropId, [FromBody] CreateIrrigationRequest request)
     {
         var command = new CreateIrrigationCommand(
@@ -45,6 +51,7 @@ public class IrrigationController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<IrrigationDto>> Update(Guid cropId, Guid id, [FromBody] UpdateIrrigationRequest request)
     {
         var command = new UpdateIrrigationCommand(
@@ -56,6 +63,7 @@ public class IrrigationController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<IActionResult> Delete(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new DeleteIrrigationCommand(cropId, id));

@@ -5,6 +5,8 @@ using AgroApp.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -21,6 +23,7 @@ public class CropsController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<CropDto>>> GetAll(Guid plotId)
     {
         var result = await _mediator.Send(new GetCropsQuery(plotId));
@@ -28,6 +31,7 @@ public class CropsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<CropDto>> GetById(Guid plotId, Guid id)
     {
         var result = await _mediator.Send(new GetCropByIdQuery(plotId, id));
@@ -35,6 +39,7 @@ public class CropsController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<CropDto>> Create(Guid plotId, [FromBody] CreateCropRequest request)
     {
         var command = new CreateCropCommand(
@@ -46,6 +51,7 @@ public class CropsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<CropDto>> Update(Guid plotId, Guid id, [FromBody] UpdateCropRequest request)
     {
         var command = new UpdateCropCommand(
@@ -58,6 +64,7 @@ public class CropsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<IActionResult> Delete(Guid plotId, Guid id)
     {
         var result = await _mediator.Send(new DeleteCropCommand(plotId, id));

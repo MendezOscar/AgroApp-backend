@@ -4,6 +4,8 @@ using AgroApp.Application.Features.Plots.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 
 namespace AgroApp.API.Controllers;
 
@@ -20,6 +22,7 @@ public class PlotsController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<List<PlotDto>>> GetAll(Guid farmId)
     {
         var result = await _mediator.Send(new GetPlotsQuery(farmId));
@@ -27,6 +30,7 @@ public class PlotsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<PlotDto>> GetById(Guid farmId, Guid id)
     {
         var result = await _mediator.Send(new GetPlotByIdQuery(farmId, id));
@@ -34,6 +38,7 @@ public class PlotsController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<PlotDto>> Create(Guid farmId, [FromBody] CreatePlotRequest request)
     {
         var command = new CreatePlotCommand(
@@ -45,6 +50,7 @@ public class PlotsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<PlotDto>> Update(Guid farmId, Guid id, [FromBody] UpdatePlotRequest request)
     {
         var command = new UpdatePlotCommand(
@@ -56,6 +62,7 @@ public class PlotsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<IActionResult> Delete(Guid farmId, Guid id)
     {
         var result = await _mediator.Send(new DeletePlotCommand(farmId, id));
