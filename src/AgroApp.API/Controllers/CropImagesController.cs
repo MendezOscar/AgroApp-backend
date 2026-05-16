@@ -66,4 +66,14 @@ public class CropImagesController : ControllerBase
         var result = await _mediator.Send(new DeleteCropImageCommand(cropId, id));
         return result ? NoContent() : NotFound();
     }
+
+    [HttpPost("{imageId}/analyze")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
+    public async Task<IActionResult> Analyze(
+    Guid cropId, Guid imageId)
+    {
+        var result = await _mediator.Send(
+            new AnalyzeImageCommand(cropId, imageId));
+        return Ok(result);
+    }
 }

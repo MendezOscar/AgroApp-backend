@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IStorageService, R2StorageService>();
         services.AddScoped<INotificationService, FcmNotificationService>();
+        services.AddHttpClient<IAiService, AiService>();
 
         return services;
     }

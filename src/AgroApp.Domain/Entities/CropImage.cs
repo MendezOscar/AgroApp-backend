@@ -19,5 +19,6 @@ namespace AgroApp.Domain.Entities
 
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;
+        public DateTime? AiAnalyzedAt { get; set; }
     }
 }
