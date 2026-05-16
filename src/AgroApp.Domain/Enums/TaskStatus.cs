@@ -1,0 +1,9 @@
+namespace AgroApp.Domain.Enums;
+
+public enum TaskStatus
+{
+    Pending,
+    InProgress,
+    Completed,
+    Cancelled
+}

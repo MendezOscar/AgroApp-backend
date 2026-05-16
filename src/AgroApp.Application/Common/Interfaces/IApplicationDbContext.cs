@@ -20,6 +20,8 @@ public interface IApplicationDbContext
     DbSet<CropImage> CropImages { get; }
     DbSet<CostEntry> CostEntries { get; }
     DbSet<FcmToken> FcmTokens { get; }
+    DbSet<TaskItem> Tasks { get; }
+
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
