@@ -40,9 +40,9 @@ public class CropImageConfiguration : IEntityTypeConfiguration<CropImage>
         builder.Property(x => x.CreatedAt)
             .HasColumnName("created_at");
 
-        // ← FK explícitas para evitar crop_id1 y user_id1
+        // ← Clave: WithMany apunta a la colección en Crop
         builder.HasOne(x => x.Crop)
-            .WithMany()
+            .WithMany(c => c.CropImages)  // ← esto es lo que faltaba
             .HasForeignKey(x => x.CropId)
             .HasConstraintName("fk_crop_images_crops")
             .OnDelete(DeleteBehavior.Cascade);
