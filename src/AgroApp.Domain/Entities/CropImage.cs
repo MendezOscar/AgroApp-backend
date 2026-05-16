@@ -14,9 +14,8 @@ namespace AgroApp.Domain.Entities
         public string StorageKey { get; set; } = string.Empty;
         public string? Category { get; set; }
         public string? AiDiagnosis { get; set; }
-        public decimal? AiConfidence { get; set; }
+        public float? AiConfidence { get; set; }  // ← float no decimal
         public DateTime? TakenAt { get; set; }
-
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;
         public DateTime? AiAnalyzedAt { get; set; }
