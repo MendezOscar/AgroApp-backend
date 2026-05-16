@@ -21,8 +21,8 @@ public interface IApplicationDbContext
     DbSet<CostEntry> CostEntries { get; }
     DbSet<FcmToken> FcmTokens { get; }
     DbSet<TaskItem> Tasks { get; }
-
-
+    DbSet<TaskTemplate> TaskTemplates { get; }
+    DbSet<TaskOccurrence> TaskOccurrences { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

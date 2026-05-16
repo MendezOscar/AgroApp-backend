@@ -23,6 +23,8 @@ public class AgroAppDbContext(DbContextOptions<AgroAppDbContext> options) : DbCo
     public DbSet<CostEntry> CostEntries => Set<CostEntry>();
     public DbSet<FcmToken> FcmTokens => Set<FcmToken>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<TaskTemplate> TaskTemplates => Set<TaskTemplate>();
+    public DbSet<TaskOccurrence> TaskOccurrences => Set<TaskOccurrence>();
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
