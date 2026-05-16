@@ -8,6 +8,7 @@ public class AiService : IAiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _aiServiceUrl;
+    private readonly string _r2PublicUrl;
 
     public AiService(HttpClient httpClient,
         IConfiguration configuration)
@@ -15,6 +16,8 @@ public class AiService : IAiService
         _httpClient = httpClient;
         _aiServiceUrl = configuration["AiService:Url"]
             ?? "http://localhost:8000";
+        _r2PublicUrl = configuration["R2Settings:PublicUrl"]
+            ?? "";
     }
 
     public async Task<AiDiagnosisResult> AnalyzeImageAsync(
@@ -23,9 +26,14 @@ public class AiService : IAiService
         string cropId,
         string imageId)
     {
+        // Construir URL completa si es solo un path
+        var fullUrl = imageUrl.StartsWith("http")
+            ? imageUrl
+            : $"{_r2PublicUrl.TrimEnd('/')}/{imageUrl}";
+
         var payload = new
         {
-            image_url = imageUrl,
+            image_url = fullUrl,  // ← URL completa
             crop_type = cropType,
             crop_id = cropId,
             image_id = imageId,
