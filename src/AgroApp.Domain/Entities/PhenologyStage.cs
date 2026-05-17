@@ -1,19 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AgroApp.Domain.Common;
 
-namespace AgroApp.Domain.Entities
-{
-    public class PhenologyStage : BaseLog
-    {
-        public Guid CropId { get; set; }
-        public string StageName { get; set; } = string.Empty;
-        public DateOnly StartedAt { get; set; }
-        public DateOnly? EndedAt { get; set; }
-        public string? Notes { get; set; }
+namespace AgroApp.Domain.Entities;
 
-        public Crop Crop { get; set; } = null!;
-    }
+public class PhenologyStage : BaseLog
+{
+    public Guid CropId { get; set; }
+    public Guid TenantId { get; set; }
+    public Guid? TemplateId { get; set; }
+    public string StageName { get; set; } = string.Empty;
+    public int StageOrder { get; set; }
+    public DateOnly StartedAt { get; set; }
+    public DateOnly? EndedAt { get; set; }
+    public string? Observations { get; set; }
+    public bool IsCustom { get; set; } = false;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navegación
+    public Crop Crop { get; set; } = null!;
+    public Tenant Tenant { get; set; } = null!;
+    public PhenologyTemplate? Template { get; set; }
 }

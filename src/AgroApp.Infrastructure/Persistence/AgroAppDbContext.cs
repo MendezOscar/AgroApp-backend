@@ -25,7 +25,7 @@ public class AgroAppDbContext(DbContextOptions<AgroAppDbContext> options) : DbCo
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<TaskTemplate> TaskTemplates => Set<TaskTemplate>();
     public DbSet<TaskOccurrence> TaskOccurrences => Set<TaskOccurrence>();
-
+    public DbSet<PhenologyTemplate> PhenologyTemplates => Set<PhenologyTemplate>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

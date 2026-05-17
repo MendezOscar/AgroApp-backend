@@ -23,6 +23,8 @@ public interface IApplicationDbContext
     DbSet<TaskItem> Tasks { get; }
     DbSet<TaskTemplate> TaskTemplates { get; }
     DbSet<TaskOccurrence> TaskOccurrences { get; }
+    DbSet<PhenologyTemplate> PhenologyTemplates { get; }
+    DbSet<PhenologyStage> PhenologyStages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
