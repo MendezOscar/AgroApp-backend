@@ -56,7 +56,7 @@ public class AnalyzeImageCommandHandler
 
         image.AiDiagnosis = diagnosisJson;
         image.AiAnalyzedAt = DateTime.UtcNow;
-        image.AiConfidence = result.Confidence;
+        image.AiConfidence = result.Confidence; // ← redondear
 
         await _context.SaveChangesAsync(cancellationToken);
 

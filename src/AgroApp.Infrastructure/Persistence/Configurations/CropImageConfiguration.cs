@@ -32,7 +32,8 @@ public class CropImageConfiguration : IEntityTypeConfiguration<CropImage>
         builder.Property(x => x.AiDiagnosis)
             .HasColumnName("ai_diagnosis");
         builder.Property(x => x.AiConfidence)
-            .HasColumnName("ai_confidence");
+            .HasColumnName("ai_confidence")
+            .HasColumnType("real"); ;
         builder.Property(x => x.AiAnalyzedAt)
             .HasColumnName("ai_analyzed_at");
         builder.Property(x => x.TakenAt)
