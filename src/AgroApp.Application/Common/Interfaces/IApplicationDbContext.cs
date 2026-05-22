@@ -25,6 +25,7 @@ public interface IApplicationDbContext
     DbSet<TaskOccurrence> TaskOccurrences { get; }
     DbSet<PhenologyTemplate> PhenologyTemplates { get; }
     DbSet<PhenologyStage> PhenologyStages { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

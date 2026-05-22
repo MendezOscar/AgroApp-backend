@@ -26,6 +26,8 @@ public class AgroAppDbContext(DbContextOptions<AgroAppDbContext> options) : DbCo
     public DbSet<TaskTemplate> TaskTemplates => Set<TaskTemplate>();
     public DbSet<TaskOccurrence> TaskOccurrences => Set<TaskOccurrence>();
     public DbSet<PhenologyTemplate> PhenologyTemplates => Set<PhenologyTemplate>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
