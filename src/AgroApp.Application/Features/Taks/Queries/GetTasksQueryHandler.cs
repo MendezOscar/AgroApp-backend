@@ -29,8 +29,9 @@ public class GetTasksQueryHandler(
         if (request.OnlyMine)
             query = query.Where(t => t.AssignedTo == _currentUser.UserId);
 
-        if (request.Status != null)
-            query = query.Where(t => t.Status.ToString() == request.Status);
+        if (request.Status != null &&
+            Enum.TryParse<AgroApp.Domain.Enums.TaskStatus>(request.Status, out var statusFilter))
+            query = query.Where(t => t.Status == statusFilter);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
