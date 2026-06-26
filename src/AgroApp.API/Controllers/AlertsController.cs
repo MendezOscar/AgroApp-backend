@@ -1,3 +1,4 @@
+using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Alerts.Commands;
 using AgroApp.Application.Features.Alerts.DTOs;
 using AgroApp.Application.Features.Alerts.Queries;
@@ -20,9 +21,12 @@ public class AlertsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<AlertDto>>> GetAll([FromQuery] bool onlyUnread = false)
+    public async Task<ActionResult<PagedResult<AlertDto>>> GetAll(
+        [FromQuery] bool onlyUnread = false,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var result = await _mediator.Send(new GetAlertsQuery(onlyUnread));
+        var result = await _mediator.Send(new GetAlertsQuery(onlyUnread, page, pageSize));
         return Ok(result);
     }
 

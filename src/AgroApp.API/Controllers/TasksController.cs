@@ -1,5 +1,6 @@
 using AgroApp.API.Authorization;
 using AgroApp.Application.Common.Constants;
+using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Tasks.Commands;
 using AgroApp.Application.Features.Tasks.DTOs;
 using AgroApp.Application.Features.Tasks.Queries;
@@ -23,12 +24,14 @@ public class TasksController : ControllerBase
 
     // Todos ven tareas — Admin/Manager ven todas, Farmer solo las suyas
     [HttpGet]
-    public async Task<ActionResult<List<TaskDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<TaskDto>>> GetAll(
         [FromQuery] bool onlyMine = false,
-        [FromQuery] string? status = null)
+        [FromQuery] string? status = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         var result = await _mediator.Send(
-            new GetTasksQuery(onlyMine, status));
+            new GetTasksQuery(onlyMine, status, page, pageSize));
         return Ok(result);
     }
 

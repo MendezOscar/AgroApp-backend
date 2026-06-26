@@ -1,3 +1,4 @@
+using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Labor.Commands;
 using AgroApp.Application.Features.Labor.DTOs;
 using AgroApp.Application.Features.Labor.Queries;
@@ -20,9 +21,13 @@ public class LaborController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<LaborDto>>> GetAll(Guid cropId)
+    public async Task<ActionResult<PagedResult<LaborDto>>> GetAll(
+        Guid cropId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var result = await _mediator.Send(new GetLaborsQuery(cropId));
+        var result = await _mediator.Send(
+            new GetLaborsQuery(cropId, page, pageSize));
         return Ok(result);
     }
 

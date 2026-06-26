@@ -1,24 +1,20 @@
 using AgroApp.Application.Common.Interfaces;
+using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Tasks.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgroApp.Application.Features.Tasks.Queries;
 
-public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, List<TaskDto>>
+public class GetTasksQueryHandler(
+    IApplicationDbContext context,
+    ICurrentUserService currentUser)
+        : IRequestHandler<GetTasksQuery, PagedResult<TaskDto>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly ICurrentUserService _currentUser;
+    private readonly IApplicationDbContext _context = context;
+    private readonly ICurrentUserService _currentUser = currentUser;
 
-    public GetTasksQueryHandler(
-        IApplicationDbContext context,
-        ICurrentUserService currentUser)
-    {
-        _context = context;
-        _currentUser = currentUser;
-    }
-
-    public async Task<List<TaskDto>> Handle(
+    public async Task<PagedResult<TaskDto>> Handle(
         GetTasksQuery request,
         CancellationToken cancellationToken)
     {
@@ -36,9 +32,13 @@ public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, List<TaskDto>
         if (request.Status != null)
             query = query.Where(t => t.Status.ToString() == request.Status);
 
-        return await query
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderBy(t => t.DueDate)
             .ThenByDescending(t => t.Priority)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(t => new TaskDto(
                 t.Id, t.CreatedBy, t.AssignedTo,
                 t.Assignee.Name, t.Creator.Name,
@@ -49,5 +49,12 @@ public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, List<TaskDto>
                 t.TaskType.ToString(),
                 t.DueDate, t.CompletedAt, t.Notes, t.CreatedAt))
             .ToListAsync(cancellationToken);
+
+        return new PagedResult<TaskDto>(
+            items,
+            totalCount,
+            request.Page,
+            request.PageSize,
+            request.Page * request.PageSize < totalCount);
     }
 }

@@ -1,6 +1,7 @@
 using AgroApp.Application.Features.Irrigation.Commands;
 using AgroApp.Application.Features.Irrigation.DTOs;
 using AgroApp.Application.Features.Irrigation.Queries;
+using AgroApp.Application.Common.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +24,13 @@ public class IrrigationController : ControllerBase
 
     [HttpGet]
     [RequireRole(Roles.All)]
-    public async Task<ActionResult<List<IrrigationDto>>> GetAll(Guid cropId)
+    public async Task<ActionResult<PagedResult<IrrigationDto>>> GetAll(
+        Guid cropId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var result = await _mediator.Send(new GetIrrigationsQuery(cropId));
+        var result = await _mediator.Send(
+            new GetIrrigationsQuery(cropId, page, pageSize));
         return Ok(result);
     }
 

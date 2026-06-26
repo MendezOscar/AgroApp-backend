@@ -1,3 +1,4 @@
+using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Fertilization.Commands;
 using AgroApp.Application.Features.Fertilization.DTOs;
 using AgroApp.Application.Features.Fertilization.Queries;
@@ -20,9 +21,13 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<FertilizationDto>>> GetAll(Guid cropId)
+    public async Task<ActionResult<PagedResult<FertilizationDto>>> GetAll(
+        Guid cropId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var result = await _mediator.Send(new GetFertilizationsQuery(cropId));
+        var result = await _mediator.Send(
+            new GetFertilizationsQuery(cropId, page, pageSize));
         return Ok(result);
     }
 
