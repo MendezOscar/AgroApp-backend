@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IStorageService, R2StorageService>();
         services.AddScoped<INotificationService, FcmNotificationService>();
         services.AddHttpClient<IAiService, AiService>();
+        services.AddHostedService<IrrigationReminderBackgroundService>();
 
         return services;
     }

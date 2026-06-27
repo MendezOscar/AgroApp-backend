@@ -8,6 +8,7 @@ public class Alert
     public Guid? DeviceId { get; set; }
     public Guid TenantId { get; set; }
     public Guid? PlotId { get; set; }
+    public Guid? CropId { get; set; }
     public string AlertType { get; set; } = string.Empty;
     public AlertSeverity Severity { get; set; } = AlertSeverity.Warning;
     public string Message { get; set; } = string.Empty;
@@ -18,4 +19,5 @@ public class Alert
     public SensorDevice? Device { get; set; }
     public Tenant Tenant { get; set; } = null!;
     public Plot? Plot { get; set; }
+    public Crop? Crop { get; set; }
 }

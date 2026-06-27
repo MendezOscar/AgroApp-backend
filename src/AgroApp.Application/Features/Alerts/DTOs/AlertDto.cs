@@ -4,6 +4,7 @@ public record AlertDto(
     Guid Id,
     Guid? DeviceId,
     Guid? PlotId,
+    Guid? CropId,
     string AlertType,
     string Severity,
     string Message,

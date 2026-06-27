@@ -14,6 +14,7 @@ public class AlertConfiguration : IEntityTypeConfiguration<Alert>
         builder.Property(x => x.TenantId).HasColumnName("tenant_id");
         builder.Property(x => x.DeviceId).HasColumnName("device_id");
         builder.Property(x => x.PlotId).HasColumnName("plot_id");
+        builder.Property(x => x.CropId).HasColumnName("crop_id");
         builder.Property(x => x.AlertType).IsRequired().HasMaxLength(100).HasColumnName("alert_type");
         builder.Property(x => x.Severity).HasConversion<string>().HasMaxLength(50).HasColumnName("severity");
         builder.Property(x => x.Message).IsRequired().HasColumnName("message");
@@ -27,5 +28,7 @@ public class AlertConfiguration : IEntityTypeConfiguration<Alert>
             .HasForeignKey(x => x.DeviceId).OnDelete(DeleteBehavior.SetNull);
         builder.HasOne(x => x.Plot).WithMany()
             .HasForeignKey(x => x.PlotId).OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne(x => x.Crop).WithMany()
+            .HasForeignKey(x => x.CropId).OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -31,7 +31,7 @@ public class GetAlertsQueryHandler(
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(a => new AlertDto(
-                a.Id, a.DeviceId, a.PlotId, a.AlertType,
+                a.Id, a.DeviceId, a.PlotId, a.CropId, a.AlertType,
                 a.Severity.ToString(), a.Message,
                 a.IsRead, a.TriggeredAt, a.ReadAt))
             .ToListAsync(cancellationToken);
