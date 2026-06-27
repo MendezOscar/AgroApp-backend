@@ -1,3 +1,5 @@
+using AgroApp.Application.Features.Crops.DTOs;
+using AgroApp.Application.Features.Crops.Queries;
 using AgroApp.Application.Features.Plots.Commands;
 using AgroApp.Application.Features.Plots.DTOs;
 using AgroApp.Application.Features.Plots.Queries;
@@ -67,5 +69,13 @@ public class PlotsController : ControllerBase
     {
         var result = await _mediator.Send(new DeletePlotCommand(farmId, id));
         return result ? NoContent() : NotFound();
+    }
+
+    [HttpGet("/api/farms/{farmId}/crops/comparison")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<List<CropComparisonDto>>> GetCropComparison(Guid farmId)
+    {
+        var result = await _mediator.Send(new GetCropComparisonQuery(farmId));
+        return Ok(result);
     }
 }

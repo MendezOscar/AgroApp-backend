@@ -1,0 +1,58 @@
+using AgroApp.Application.Common.Interfaces;
+using AgroApp.Application.Features.Crops.DTOs;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace AgroApp.Application.Features.Crops.Queries;
+
+public class GetCropComparisonQueryHandler(
+    IApplicationDbContext context,
+    ICurrentUserService currentUser)
+        : IRequestHandler<GetCropComparisonQuery, List<CropComparisonDto>>
+{
+    private readonly IApplicationDbContext _context = context;
+    private readonly ICurrentUserService _currentUser = currentUser;
+
+    public async Task<List<CropComparisonDto>> Handle(
+        GetCropComparisonQuery request,
+        CancellationToken cancellationToken)
+    {
+        var crops = await _context.Crops
+            .Where(c => c.Plot.FarmId == request.FarmId
+                     && c.Plot.Farm.TenantId == _currentUser.TenantId)
+            .Select(c => new
+            {
+                c.Id,
+                c.CropType,
+                c.Variety,
+                PlotName = c.Plot.Name,
+                c.Status,
+                c.YieldKg
+            })
+            .ToListAsync(cancellationToken);
+
+        var fertCostByCrop = await _context.FertilizationLogs
+            .Where(f => f.Crop.Plot.FarmId == request.FarmId
+                     && f.Crop.Plot.Farm.TenantId == _currentUser.TenantId)
+            .GroupBy(f => f.CropId)
+            .Select(g => new { CropId = g.Key, Cost = g.Sum(f => f.Cost ?? 0) })
+            .ToDictionaryAsync(x => x.CropId, x => x.Cost, cancellationToken);
+
+        var laborCostByCrop = await _context.LaborLogs
+            .Where(l => l.Crop.Plot.FarmId == request.FarmId
+                     && l.Crop.Plot.Farm.TenantId == _currentUser.TenantId)
+            .GroupBy(l => l.CropId)
+            .Select(g => new { CropId = g.Key, Cost = g.Sum(l => l.Cost ?? 0) })
+            .ToDictionaryAsync(x => x.CropId, x => x.Cost, cancellationToken);
+
+        return crops.Select(c =>
+        {
+            var totalCost = fertCostByCrop.GetValueOrDefault(c.Id)
+                           + laborCostByCrop.GetValueOrDefault(c.Id);
+
+            return new CropComparisonDto(
+                c.Id, c.CropType, c.Variety, c.PlotName,
+                c.Status.ToString(), c.YieldKg, totalCost);
+        }).ToList();
+    }
+}
