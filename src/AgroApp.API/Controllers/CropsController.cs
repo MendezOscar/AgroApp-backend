@@ -38,6 +38,14 @@ public class CropsController : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
+    [HttpGet("{id}/prediction")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<CropPredictionDto>> GetPrediction(Guid plotId, Guid id)
+    {
+        var result = await _mediator.Send(new GetCropPredictionQuery(plotId, id));
+        return result is null ? NotFound() : Ok(result);
+    }
+
     [HttpPost]
     [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<CropDto>> Create(Guid plotId, [FromBody] CreateCropRequest request)
