@@ -39,6 +39,14 @@ public class PlotsController : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
+    [HttpGet("geo")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<List<PlotGeoDto>>> GetGeo(Guid farmId)
+    {
+        var result = await _mediator.Send(new GetFarmPlotsGeoQuery(farmId));
+        return Ok(result);
+    }
+
     [HttpPost]
     [RequireRole(Roles.Admin, Roles.Manager)]
     public async Task<ActionResult<PlotDto>> Create(Guid farmId, [FromBody] CreatePlotRequest request)

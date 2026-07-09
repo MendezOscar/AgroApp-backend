@@ -1,3 +1,5 @@
+using AgroApp.Application.Features.Crops.DTOs;
+using AgroApp.Application.Features.Crops.Queries;
 using AgroApp.Application.Features.Farms.Commands;
 using AgroApp.Application.Features.Farms.DTOs;
 using AgroApp.Application.Features.Farms.Queries;
@@ -69,5 +71,21 @@ public class FarmsController : ControllerBase
     {
         var result = await _mediator.Send(new DeleteFarmCommand(id));
         return result ? NoContent() : NotFound();
+    }
+
+    [HttpGet("{id}/summary")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<FarmSummaryDto>> GetSummary(Guid id)
+    {
+        var result = await _mediator.Send(new GetFarmSummaryQuery(id));
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpGet("{id}/yield-history")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<List<YieldHistoryDto>>> GetYieldHistory(Guid id, [FromQuery] int months = 12)
+    {
+        var result = await _mediator.Send(new GetYieldHistoryQuery(id, months));
+        return Ok(result);
     }
 }

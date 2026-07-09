@@ -66,12 +66,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+var webDashboardOrigins = new List<string> { "http://localhost:5173" };
+var configuredWebDashboardOrigin = builder.Configuration["WebDashboardOrigin"];
+if (!string.IsNullOrWhiteSpace(configuredWebDashboardOrigin))
+{
+    webDashboardOrigins.Add(configuredWebDashboardOrigin);
+}
+
+builder.Services.AddCors(options => options.AddPolicy("WebDashboard", policy => policy
+    .WithOrigins(webDashboardOrigins.ToArray())
+    .AllowAnyHeader()
+    .AllowAnyMethod()));
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseCors("WebDashboard");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
