@@ -19,6 +19,8 @@ namespace AgroApp.Infrastructure.Persistence.Configurations
                 .HasForeignKey(x => x.CropId).OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(x => x.User).WithMany()
                 .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Task).WithMany()
+                .HasForeignKey(x => x.TaskId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

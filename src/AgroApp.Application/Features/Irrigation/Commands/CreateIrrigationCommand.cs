@@ -9,5 +9,6 @@ public record CreateIrrigationCommand(
     decimal? VolumeLiters,
     int? DurationMin,
     DateTime AppliedAt,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 ) : IRequest<IrrigationDto>;

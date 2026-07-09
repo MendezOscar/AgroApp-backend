@@ -49,7 +49,7 @@ public class IrrigationController : ControllerBase
     {
         var command = new CreateIrrigationCommand(
             cropId, request.Method, request.VolumeLiters,
-            request.DurationMin, request.AppliedAt, request.Notes);
+            request.DurationMin, request.AppliedAt, request.Notes, request.TaskId);
 
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetById), new { cropId, id = result.Id }, result);

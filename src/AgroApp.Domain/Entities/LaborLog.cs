@@ -10,6 +10,7 @@ namespace AgroApp.Domain.Entities
     {
         public Guid CropId { get; set; }
         public Guid UserId { get; set; }
+        public Guid? TaskId { get; set; }
         public string ActivityType { get; set; } = string.Empty;
         public decimal? HoursWorked { get; set; }
         public int WorkersCount { get; set; } = 1;
@@ -19,5 +20,6 @@ namespace AgroApp.Domain.Entities
 
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;
+        public TaskItem? Task { get; set; }
     }
 }

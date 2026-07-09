@@ -24,9 +24,9 @@ public class CropsController : ControllerBase
 
     [HttpGet]
     [RequireRole(Roles.All)]
-    public async Task<ActionResult<List<CropDto>>> GetAll(Guid plotId)
+    public async Task<ActionResult<List<CropDto>>> GetAll(Guid plotId, [FromQuery] CropStatus? status = null)
     {
-        var result = await _mediator.Send(new GetCropsQuery(plotId));
+        var result = await _mediator.Send(new GetCropsQuery(plotId, status));
         return Ok(result);
     }
 

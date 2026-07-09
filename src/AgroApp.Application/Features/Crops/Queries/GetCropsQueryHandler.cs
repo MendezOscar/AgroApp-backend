@@ -20,7 +20,8 @@ public class GetCropsQueryHandler : IRequestHandler<GetCropsQuery, List<CropDto>
     {
         return await _context.Crops
             .Where(c => c.PlotId == request.PlotId
-                     && c.Plot.Farm.TenantId == _currentUser.TenantId)
+                     && c.Plot.Farm.TenantId == _currentUser.TenantId
+                     && (request.Status == null || c.Status == request.Status))
             .OrderByDescending(c => c.PlantedAt)
             .Select(c => new CropDto(
                 c.Id, c.PlotId, c.CropType, c.Variety,

@@ -40,6 +40,15 @@ public class UpdateTaskStatusCommandHandler
         if (task is null) return null;
 
         var newStatus = Enum.Parse<Domain.Enums.TaskStatus>(request.Status, true);
+
+        var requiresRegistration = task.TaskType is TaskType.Irrigation
+            or TaskType.Fertilization or TaskType.Labor;
+        var isCompletingNow = newStatus == Domain.Enums.TaskStatus.Completed
+            && task.Status != Domain.Enums.TaskStatus.Completed;
+        if (isCompletingNow && requiresRegistration)
+            throw new InvalidOperationException(
+                "Esta tarea debe completarse registrando la actividad correspondiente.");
+
         task.Status = newStatus;
         task.Notes  = request.Notes ?? task.Notes;
 

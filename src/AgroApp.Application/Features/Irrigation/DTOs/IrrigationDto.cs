@@ -17,7 +17,8 @@ public record CreateIrrigationRequest(
     decimal? VolumeLiters,
     int? DurationMin,
     DateTime AppliedAt,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 );
 
 public record UpdateIrrigationRequest(

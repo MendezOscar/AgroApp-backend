@@ -45,7 +45,7 @@ public class FertilizationController : ControllerBase
             cropId, request.ProductName, request.ProductType,
             request.DoseKgHa, request.TotalKg, request.Method,
             request.Cost, request.AppliedAt, request.NextApplication,
-            request.Notes);
+            request.Notes, request.TaskId);
 
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetById), new { cropId, id = result.Id }, result);

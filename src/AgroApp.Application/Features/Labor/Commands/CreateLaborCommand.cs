@@ -10,5 +10,6 @@ public record CreateLaborCommand(
     int WorkersCount,
     decimal? Cost,
     DateTime PerformedAt,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 ) : IRequest<LaborDto>;

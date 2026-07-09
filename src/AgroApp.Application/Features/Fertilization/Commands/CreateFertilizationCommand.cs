@@ -13,5 +13,6 @@ public record CreateFertilizationCommand(
     decimal? Cost,
     DateTime AppliedAt,
     DateOnly? NextApplication,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 ) : IRequest<FertilizationDto>;

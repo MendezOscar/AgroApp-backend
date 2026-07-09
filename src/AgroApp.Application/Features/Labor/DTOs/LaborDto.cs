@@ -19,7 +19,8 @@ public record CreateLaborRequest(
     int WorkersCount,
     decimal? Cost,
     DateTime PerformedAt,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 );
 
 public record UpdateLaborRequest(

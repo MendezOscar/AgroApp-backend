@@ -10,6 +10,7 @@ namespace AgroApp.Domain.Entities
     {
         public Guid CropId { get; set; }
         public Guid UserId { get; set; }
+        public Guid? TaskId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string? ProductType { get; set; }
         public decimal? DoseKgHa { get; set; }
@@ -22,5 +23,6 @@ namespace AgroApp.Domain.Entities
 
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;
+        public TaskItem? Task { get; set; }
     }
 }

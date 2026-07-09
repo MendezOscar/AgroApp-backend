@@ -1,6 +1,7 @@
 using AgroApp.Application.Common.Interfaces;
 using AgroApp.Application.Features.Fertilization.DTOs;
 using AgroApp.Domain.Entities;
+using AgroApp.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,16 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly INotificationService _notifications;
 
-    public CreateFertilizationCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public CreateFertilizationCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        INotificationService notifications)
     {
         _context = context;
         _currentUser = currentUser;
+        _notifications = notifications;
     }
 
     public async Task<FertilizationDto> Handle(CreateFertilizationCommand request, CancellationToken cancellationToken)
@@ -28,10 +34,27 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
         if (crop is null)
             throw new InvalidOperationException("Cultivo no encontrado.");
 
+        TaskItem? task = null;
+        if (request.TaskId is not null)
+        {
+            task = await _context.Tasks.FirstOrDefaultAsync(t =>
+                t.Id == request.TaskId && t.TenantId == _currentUser.TenantId, cancellationToken);
+
+            if (task is null)
+                throw new InvalidOperationException("Tarea no encontrada.");
+            if (task.TaskType != TaskType.Fertilization)
+                throw new InvalidOperationException("La tarea no es de tipo Fertilización.");
+            if (task.CropId != request.CropId)
+                throw new InvalidOperationException("La tarea no corresponde a este cultivo.");
+            if (task.Status == Domain.Enums.TaskStatus.Completed)
+                throw new InvalidOperationException("La tarea ya está completada.");
+        }
+
         var log = new FertilizationLog
         {
             CropId = request.CropId,
             UserId = _currentUser.UserId,
+            TaskId = request.TaskId,
             ProductName = request.ProductName,
             ProductType = request.ProductType,
             DoseKgHa = request.DoseKgHa,
@@ -44,7 +67,27 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
         };
 
         _context.FertilizationLogs.Add(log);
+
+        if (task is not null)
+        {
+            task.Status = Domain.Enums.TaskStatus.Completed;
+            task.CompletedAt = DateTime.UtcNow;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (task is not null)
+        {
+            await _notifications.SendToUserAsync(
+                task.CreatedBy,
+                title: "✅ Tarea completada",
+                body: $"Fertilización registrada: {task.Title}",
+                data: new Dictionary<string, string>
+                {
+                    ["taskId"] = task.Id.ToString(),
+                    ["type"] = "task_completed"
+                });
+        }
 
         return new FertilizationDto(
             log.Id, log.CropId, log.UserId, log.ProductName, log.ProductType,

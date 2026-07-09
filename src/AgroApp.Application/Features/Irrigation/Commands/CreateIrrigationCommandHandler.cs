@@ -1,6 +1,7 @@
 using AgroApp.Application.Common.Interfaces;
 using AgroApp.Application.Features.Irrigation.DTOs;
 using AgroApp.Domain.Entities;
+using AgroApp.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,16 @@ public class CreateIrrigationCommandHandler : IRequestHandler<CreateIrrigationCo
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly INotificationService _notifications;
 
-    public CreateIrrigationCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public CreateIrrigationCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        INotificationService notifications)
     {
         _context = context;
         _currentUser = currentUser;
+        _notifications = notifications;
     }
 
     public async Task<IrrigationDto> Handle(CreateIrrigationCommand request, CancellationToken cancellationToken)
@@ -28,10 +34,27 @@ public class CreateIrrigationCommandHandler : IRequestHandler<CreateIrrigationCo
         if (crop is null)
             throw new InvalidOperationException("Cultivo no encontrado.");
 
+        TaskItem? task = null;
+        if (request.TaskId is not null)
+        {
+            task = await _context.Tasks.FirstOrDefaultAsync(t =>
+                t.Id == request.TaskId && t.TenantId == _currentUser.TenantId, cancellationToken);
+
+            if (task is null)
+                throw new InvalidOperationException("Tarea no encontrada.");
+            if (task.TaskType != TaskType.Irrigation)
+                throw new InvalidOperationException("La tarea no es de tipo Riego.");
+            if (task.CropId != request.CropId)
+                throw new InvalidOperationException("La tarea no corresponde a este cultivo.");
+            if (task.Status == Domain.Enums.TaskStatus.Completed)
+                throw new InvalidOperationException("La tarea ya está completada.");
+        }
+
         var irrigation = new IrrigationLog
         {
             CropId = request.CropId,
             UserId = _currentUser.UserId,
+            TaskId = request.TaskId,
             Method = request.Method,
             VolumeLiters = request.VolumeLiters,
             DurationMin = request.DurationMin,
@@ -40,7 +63,27 @@ public class CreateIrrigationCommandHandler : IRequestHandler<CreateIrrigationCo
         };
 
         _context.IrrigationLogs.Add(irrigation);
+
+        if (task is not null)
+        {
+            task.Status = Domain.Enums.TaskStatus.Completed;
+            task.CompletedAt = DateTime.UtcNow;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (task is not null)
+        {
+            await _notifications.SendToUserAsync(
+                task.CreatedBy,
+                title: "✅ Tarea completada",
+                body: $"Riego registrado: {task.Title}",
+                data: new Dictionary<string, string>
+                {
+                    ["taskId"] = task.Id.ToString(),
+                    ["type"] = "task_completed"
+                });
+        }
 
         return new IrrigationDto(
             irrigation.Id, irrigation.CropId, irrigation.UserId,

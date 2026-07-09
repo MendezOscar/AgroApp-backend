@@ -25,7 +25,8 @@ public record CreateFertilizationRequest(
     decimal? Cost,
     DateTime AppliedAt,
     DateOnly? NextApplication,
-    string? Notes
+    string? Notes,
+    Guid? TaskId = null
 );
 
 public record UpdateFertilizationRequest(

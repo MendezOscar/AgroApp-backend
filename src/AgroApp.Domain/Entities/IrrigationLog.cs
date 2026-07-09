@@ -10,6 +10,7 @@ namespace AgroApp.Domain.Entities
     {
         public Guid CropId { get; set; }
         public Guid UserId { get; set; }
+        public Guid? TaskId { get; set; }
         public string Method { get; set; } = string.Empty;
         public decimal? VolumeLiters { get; set; }
         public int? DurationMin { get; set; }
@@ -18,5 +19,6 @@ namespace AgroApp.Domain.Entities
 
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;
+        public TaskItem? Task { get; set; }
     }
 }
