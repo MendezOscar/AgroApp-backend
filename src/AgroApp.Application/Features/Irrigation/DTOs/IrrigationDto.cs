@@ -32,3 +32,5 @@ public record UpdateIrrigationRequest(
     string? Notes,
     decimal? Cost = null
 );
+
+public record SetCostRequest(decimal Cost);

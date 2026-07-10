@@ -75,4 +75,12 @@ public class IrrigationController : ControllerBase
         var result = await _mediator.Send(new DeleteIrrigationCommand(cropId, id));
         return result ? NoContent() : NotFound();
     }
+
+    [HttpPatch("{id}/cost")]
+    [RequireRole(Roles.AdminOrManager)]
+    public async Task<ActionResult<IrrigationDto>> SetCost(Guid cropId, Guid id, [FromBody] SetCostRequest request)
+    {
+        var result = await _mediator.Send(new SetIrrigationCostCommand(cropId, id, request.Cost));
+        return result is null ? NotFound() : Ok(result);
+    }
 }

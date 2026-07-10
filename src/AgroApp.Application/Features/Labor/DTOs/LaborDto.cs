@@ -32,3 +32,5 @@ public record UpdateLaborRequest(
     DateTime PerformedAt,
     string? Notes
 );
+
+public record SetCostRequest(decimal Cost);

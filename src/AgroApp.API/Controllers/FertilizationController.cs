@@ -1,3 +1,5 @@
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Fertilization.Commands;
 using AgroApp.Application.Features.Fertilization.DTOs;
@@ -21,6 +23,7 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<PagedResult<FertilizationDto>>> GetAll(
         Guid cropId,
         [FromQuery] int page = 1,
@@ -32,6 +35,7 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<FertilizationDto>> GetById(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new GetFertilizationByIdQuery(cropId, id));
@@ -39,6 +43,7 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<FertilizationDto>> Create(Guid cropId, [FromBody] CreateFertilizationRequest request)
     {
         var command = new CreateFertilizationCommand(
@@ -52,6 +57,7 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<FertilizationDto>> Update(Guid cropId, Guid id, [FromBody] UpdateFertilizationRequest request)
     {
         var command = new UpdateFertilizationCommand(
@@ -65,9 +71,18 @@ public class FertilizationController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<IActionResult> Delete(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new DeleteFertilizationCommand(cropId, id));
         return result ? NoContent() : NotFound();
+    }
+
+    [HttpPatch("{id}/cost")]
+    [RequireRole(Roles.AdminOrManager)]
+    public async Task<ActionResult<FertilizationDto>> SetCost(Guid cropId, Guid id, [FromBody] SetCostRequest request)
+    {
+        var result = await _mediator.Send(new SetFertilizationCostCommand(cropId, id, request.Cost));
+        return result is null ? NotFound() : Ok(result);
     }
 }

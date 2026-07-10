@@ -41,3 +41,5 @@ public record UpdateFertilizationRequest(
     DateOnly? NextApplication,
     string? Notes
 );
+
+public record SetCostRequest(decimal Cost);

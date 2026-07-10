@@ -1,3 +1,5 @@
+using AgroApp.Application.Features.Costs.DTOs;
+using AgroApp.Application.Features.Costs.Queries;
 using AgroApp.Application.Features.CropImages.DTOs;
 using AgroApp.Application.Features.CropImages.Queries;
 using AgroApp.Application.Features.Crops.DTOs;
@@ -96,6 +98,14 @@ public class FarmsController : ControllerBase
     public async Task<ActionResult<List<PestDiagnosisSummaryDto>>> GetPestDiagnosisSummary(Guid id)
     {
         var result = await _mediator.Send(new GetPestDiagnosisSummaryQuery(id));
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/pending-costs")]
+    [RequireRole(Roles.AdminOrManager)]
+    public async Task<ActionResult<List<PendingCostActivityDto>>> GetPendingCosts(Guid id)
+    {
+        var result = await _mediator.Send(new GetPendingCostActivitiesQuery(id));
         return Ok(result);
     }
 }

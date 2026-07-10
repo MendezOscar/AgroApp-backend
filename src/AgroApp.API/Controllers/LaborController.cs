@@ -1,3 +1,5 @@
+using AgroApp.API.Authorization;
+using AgroApp.Application.Common.Constants;
 using AgroApp.Application.Common.Models;
 using AgroApp.Application.Features.Labor.Commands;
 using AgroApp.Application.Features.Labor.DTOs;
@@ -21,6 +23,7 @@ public class LaborController : ControllerBase
     }
 
     [HttpGet]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<PagedResult<LaborDto>>> GetAll(
         Guid cropId,
         [FromQuery] int page = 1,
@@ -32,6 +35,7 @@ public class LaborController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [RequireRole(Roles.All)]
     public async Task<ActionResult<LaborDto>> GetById(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new GetLaborByIdQuery(cropId, id));
@@ -39,6 +43,7 @@ public class LaborController : ControllerBase
     }
 
     [HttpPost]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<LaborDto>> Create(Guid cropId, [FromBody] CreateLaborRequest request)
     {
         var command = new CreateLaborCommand(
@@ -52,6 +57,7 @@ public class LaborController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<ActionResult<LaborDto>> Update(Guid cropId, Guid id, [FromBody] UpdateLaborRequest request)
     {
         var command = new UpdateLaborCommand(
@@ -64,9 +70,18 @@ public class LaborController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [RequireRole(Roles.AdminManagerOrFarmer)]
     public async Task<IActionResult> Delete(Guid cropId, Guid id)
     {
         var result = await _mediator.Send(new DeleteLaborCommand(cropId, id));
         return result ? NoContent() : NotFound();
+    }
+
+    [HttpPatch("{id}/cost")]
+    [RequireRole(Roles.AdminOrManager)]
+    public async Task<ActionResult<LaborDto>> SetCost(Guid cropId, Guid id, [FromBody] SetCostRequest request)
+    {
+        var result = await _mediator.Send(new SetLaborCostCommand(cropId, id, request.Cost));
+        return result is null ? NotFound() : Ok(result);
     }
 }
