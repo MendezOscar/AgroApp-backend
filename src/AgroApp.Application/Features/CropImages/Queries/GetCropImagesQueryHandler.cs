@@ -25,7 +25,7 @@ public class GetCropImagesQueryHandler : IRequestHandler<GetCropImagesQuery, Lis
             .Select(i => new CropImageDto(
                 i.Id, i.CropId, i.UserId,
                 i.Url, i.StorageKey, i.Category,
-                i.AiDiagnosis, i.AiConfidence,
+                i.AiDiagnosis, i.AiConfidence, i.DiagnosisCondition,
                 i.TakenAt, i.CreatedAt))
             .ToListAsync(cancellationToken);
     }

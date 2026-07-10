@@ -59,7 +59,7 @@ public class UploadCropImageCommandHandler : IRequestHandler<UploadCropImageComm
         return new CropImageDto(
             image.Id, image.CropId, image.UserId,
             image.Url, image.StorageKey, image.Category,
-            image.AiDiagnosis, image.AiConfidence,
+            image.AiDiagnosis, image.AiConfidence, image.DiagnosisCondition,
             image.TakenAt, image.CreatedAt);
     }
 }

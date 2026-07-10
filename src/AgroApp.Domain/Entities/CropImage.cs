@@ -15,6 +15,7 @@ namespace AgroApp.Domain.Entities
         public string? Category { get; set; }
         public string? AiDiagnosis { get; set; }
         public float? AiConfidence { get; set; }  // ← float no decimal
+        public string? DiagnosisCondition { get; set; }
         public DateTime? TakenAt { get; set; }
         public Crop Crop { get; set; } = null!;
         public User User { get; set; } = null!;

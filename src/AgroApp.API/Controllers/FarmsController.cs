@@ -1,3 +1,5 @@
+using AgroApp.Application.Features.CropImages.DTOs;
+using AgroApp.Application.Features.CropImages.Queries;
 using AgroApp.Application.Features.Crops.DTOs;
 using AgroApp.Application.Features.Crops.Queries;
 using AgroApp.Application.Features.Farms.Commands;
@@ -86,6 +88,14 @@ public class FarmsController : ControllerBase
     public async Task<ActionResult<List<YieldHistoryDto>>> GetYieldHistory(Guid id, [FromQuery] int months = 12)
     {
         var result = await _mediator.Send(new GetYieldHistoryQuery(id, months));
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/pest-diagnosis-summary")]
+    [RequireRole(Roles.All)]
+    public async Task<ActionResult<List<PestDiagnosisSummaryDto>>> GetPestDiagnosisSummary(Guid id)
+    {
+        var result = await _mediator.Send(new GetPestDiagnosisSummaryQuery(id));
         return Ok(result);
     }
 }

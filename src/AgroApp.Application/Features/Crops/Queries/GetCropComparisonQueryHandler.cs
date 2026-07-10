@@ -53,11 +53,20 @@ public class GetCropComparisonQueryHandler(
             .Select(g => new { CropId = g.Key, Cost = g.Sum(i => i.Cost ?? 0) })
             .ToDictionaryAsync(x => x.CropId, x => x.Cost, cancellationToken);
 
+        var revenueByCrop = await _context.CropSales
+            .Where(s => s.Crop.Plot.FarmId == request.FarmId
+                     && s.Crop.Plot.Farm.TenantId == _currentUser.TenantId)
+            .GroupBy(s => s.CropId)
+            .Select(g => new { CropId = g.Key, Revenue = g.Sum(s => s.QuantityKg * s.PricePerKg) })
+            .ToDictionaryAsync(x => x.CropId, x => x.Revenue, cancellationToken);
+
         return crops.Select(c =>
         {
             var totalCost = fertCostByCrop.GetValueOrDefault(c.Id)
                            + laborCostByCrop.GetValueOrDefault(c.Id)
                            + irrigationCostByCrop.GetValueOrDefault(c.Id);
+            var totalRevenue = revenueByCrop.GetValueOrDefault(c.Id);
+            var margin = totalRevenue - totalCost;
 
             var areaHa = c.AreaHa is > 0 ? c.AreaHa : null;
 
@@ -66,7 +75,9 @@ public class GetCropComparisonQueryHandler(
                 c.Status.ToString(), c.YieldKg, totalCost,
                 c.AreaHa,
                 areaHa is null ? null : c.YieldKg / areaHa,
-                areaHa is null ? null : totalCost / areaHa);
+                areaHa is null ? null : totalCost / areaHa,
+                totalRevenue, margin,
+                areaHa is null ? null : margin / areaHa);
         }).ToList();
     }
 }

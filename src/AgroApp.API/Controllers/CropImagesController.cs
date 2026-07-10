@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AgroApp.API.Authorization;
 using AgroApp.Application.Common.Constants;
+using Microsoft.Extensions.Configuration;
 
 namespace AgroApp.API.Controllers;
 
@@ -15,10 +16,12 @@ namespace AgroApp.API.Controllers;
 public class CropImagesController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
-    public CropImagesController(IMediator mediator)
+    public CropImagesController(IMediator mediator, IConfiguration configuration)
     {
         _mediator = mediator;
+        _configuration = configuration;
     }
 
     [HttpGet]
@@ -72,8 +75,11 @@ public class CropImagesController : ControllerBase
     public async Task<IActionResult> Analyze(
     Guid cropId, Guid imageId)
     {
+        var confidenceThreshold = _configuration.GetValue(
+            "PestDetection:ConfidenceThreshold", 0.6f);
+
         var result = await _mediator.Send(
-            new AnalyzeImageCommand(cropId, imageId));
+            new AnalyzeImageCommand(cropId, imageId, confidenceThreshold));
         return Ok(result);
     }
 }

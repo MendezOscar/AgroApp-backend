@@ -20,5 +20,6 @@ namespace AgroApp.Domain.Entities
         public Farm Farm { get; set; } = null!;
         public ICollection<Crop> Crops { get; set; } = new List<Crop>();
         public ICollection<SensorDevice> SensorDevices { get; set; } = new List<SensorDevice>();
+        public ICollection<SoilAnalysis> SoilAnalyses { get; set; } = new List<SoilAnalysis>();
     }
 }

@@ -9,6 +9,7 @@ public record CropImageDto(
     string? Category,
     string? AiDiagnosis,
     float? AiConfidence,
+    string? DiagnosisCondition,
     DateTime? TakenAt,
     DateTime CreatedAt
 );

@@ -10,5 +10,8 @@ public record CropComparisonDto(
     decimal TotalCost,
     decimal? AreaHa,
     decimal? YieldPerHa,
-    decimal? CostPerHa
+    decimal? CostPerHa,
+    decimal TotalRevenue,
+    decimal Margin,
+    decimal? MarginPerHa
 );
