@@ -27,9 +27,10 @@ public class UpdateIrrigationCommandHandler : IRequestHandler<UpdateIrrigationCo
 
         if (irrigation is null) return null;
 
-        irrigation.Method = request.Method; 
+        irrigation.Method = request.Method;
         irrigation.VolumeLiters = request.VolumeLiters;
         irrigation.DurationMin = request.DurationMin;
+        irrigation.Cost = request.Cost;
         irrigation.AppliedAt = request.AppliedAt;
         irrigation.Notes = request.Notes;
 
@@ -38,6 +39,6 @@ public class UpdateIrrigationCommandHandler : IRequestHandler<UpdateIrrigationCo
         return new IrrigationDto(
             irrigation.Id, irrigation.CropId, irrigation.UserId,
             irrigation.Method, irrigation.VolumeLiters, irrigation.DurationMin,
-            irrigation.AppliedAt, irrigation.Notes, irrigation.CreatedAt);
+            irrigation.Cost, irrigation.AppliedAt, irrigation.Notes, irrigation.CreatedAt);
     }
 }

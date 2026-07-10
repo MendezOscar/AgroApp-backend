@@ -31,6 +31,7 @@ public record TaskOccurrenceDto(
     Guid? AssignedTo,
     string? AssigneeName,
     string? PlotName,
+    Guid? CropId,
     string? CropName,
     DateOnly ScheduledDate,
     string Shift,

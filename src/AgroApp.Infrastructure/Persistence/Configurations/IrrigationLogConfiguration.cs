@@ -12,6 +12,7 @@ namespace AgroApp.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Method).IsRequired().HasMaxLength(100);
             builder.Property(x => x.VolumeLiters).HasPrecision(10, 2);
+            builder.Property(x => x.Cost).HasPrecision(12, 2);
             builder.Property(x => x.CreatedAt).HasColumnName("created_at");
 
             builder.HasOne(x => x.Crop).WithMany(x => x.IrrigationLogs)

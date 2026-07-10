@@ -5,5 +5,6 @@ public record MonthlyCostDto(
     int Month,
     decimal FertilizationCost,
     decimal LaborCost,
+    decimal IrrigationCost,
     decimal TotalCost
 );

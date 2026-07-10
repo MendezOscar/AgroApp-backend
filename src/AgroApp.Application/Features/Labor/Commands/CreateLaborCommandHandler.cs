@@ -50,6 +50,24 @@ public class CreateLaborCommandHandler : IRequestHandler<CreateLaborCommand, Lab
                 throw new InvalidOperationException("La tarea ya está completada.");
         }
 
+        TaskOccurrence? occurrence = null;
+        if (request.OccurrenceId is not null)
+        {
+            occurrence = await _context.TaskOccurrences
+                .Include(o => o.Template)
+                .FirstOrDefaultAsync(o => o.Id == request.OccurrenceId
+                                       && o.TenantId == _currentUser.TenantId, cancellationToken);
+
+            if (occurrence is null)
+                throw new InvalidOperationException("Turno no encontrado.");
+            if (occurrence.Template.TaskType != TaskType.Labor)
+                throw new InvalidOperationException("El turno no es de tipo Labor.");
+            if (occurrence.Template.CropId != request.CropId)
+                throw new InvalidOperationException("El turno no corresponde a este cultivo.");
+            if (occurrence.Status == Domain.Enums.TaskStatus.Completed)
+                throw new InvalidOperationException("El turno ya está completado.");
+        }
+
         var labor = new LaborLog
         {
             CropId = request.CropId,
@@ -71,6 +89,12 @@ public class CreateLaborCommandHandler : IRequestHandler<CreateLaborCommand, Lab
             task.CompletedAt = DateTime.UtcNow;
         }
 
+        if (occurrence is not null)
+        {
+            occurrence.Status = Domain.Enums.TaskStatus.Completed;
+            occurrence.CompletedAt = DateTime.UtcNow;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         if (task is not null)
@@ -83,6 +107,19 @@ public class CreateLaborCommandHandler : IRequestHandler<CreateLaborCommand, Lab
                 {
                     ["taskId"] = task.Id.ToString(),
                     ["type"] = "task_completed"
+                });
+        }
+
+        if (occurrence is not null)
+        {
+            await _notifications.SendToUserAsync(
+                occurrence.Template.CreatedBy,
+                title: "✅ Turno completado",
+                body: $"Labor registrada: {occurrence.Template.Title}",
+                data: new Dictionary<string, string>
+                {
+                    ["occurrenceId"] = occurrence.Id.ToString(),
+                    ["type"] = "shift_completed"
                 });
         }
 

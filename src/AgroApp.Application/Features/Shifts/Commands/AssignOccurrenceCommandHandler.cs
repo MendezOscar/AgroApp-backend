@@ -69,6 +69,7 @@ public class AssignOccurrenceCommandHandler
         o.Template.Priority.ToString(),
         o.AssignedTo, o.Assignee?.Name,
         o.Template.Plot?.Name,
+        o.Template.CropId,
         o.Template.Crop?.CropType,
         o.ScheduledDate, o.Shift.ToString(),
         o.Status.ToString(), o.CompletedAt, o.Notes);

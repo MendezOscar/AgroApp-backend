@@ -10,5 +10,7 @@ public record CreateIrrigationCommand(
     int? DurationMin,
     DateTime AppliedAt,
     string? Notes,
-    Guid? TaskId = null
+    decimal? Cost = null,
+    Guid? TaskId = null,
+    Guid? OccurrenceId = null
 ) : IRequest<IrrigationDto>;

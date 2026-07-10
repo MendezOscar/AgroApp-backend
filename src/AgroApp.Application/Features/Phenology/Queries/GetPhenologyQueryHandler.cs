@@ -36,6 +36,7 @@ public class GetPhenologyQueryHandler
             s.StageName,
             s.StageOrder,
             s.Template?.Icon,
+            s.Template?.Recommendations,
             s.StartedAt,
             s.EndedAt,
             s.Observations,

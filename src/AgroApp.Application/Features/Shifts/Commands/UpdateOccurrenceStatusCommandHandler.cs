@@ -41,6 +41,15 @@ public class UpdateOccurrenceStatusCommandHandler
         if (occurrence is null) return null;
 
         var newStatus = Enum.Parse<Domain.Enums.TaskStatus>(request.Status, true);
+
+        var requiresRegistration = occurrence.Template.TaskType is TaskType.Irrigation
+            or TaskType.Fertilization or TaskType.Labor;
+        var isCompletingNow = newStatus == Domain.Enums.TaskStatus.Completed
+            && occurrence.Status != Domain.Enums.TaskStatus.Completed;
+        if (isCompletingNow && requiresRegistration)
+            throw new InvalidOperationException(
+                "Este turno debe completarse registrando la actividad correspondiente.");
+
         occurrence.Status = newStatus;
         occurrence.Notes  = request.Notes ?? occurrence.Notes;
 
@@ -70,6 +79,7 @@ public class UpdateOccurrenceStatusCommandHandler
             occurrence.Template.Priority.ToString(),
             occurrence.AssignedTo, occurrence.Assignee?.Name,
             occurrence.Template.Plot?.Name,
+            occurrence.Template.CropId,
             occurrence.Template.Crop?.CropType,
             occurrence.ScheduledDate, occurrence.Shift.ToString(),
             occurrence.Status.ToString(),

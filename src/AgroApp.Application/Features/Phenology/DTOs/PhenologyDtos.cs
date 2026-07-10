@@ -19,6 +19,7 @@ public record PhenologyStageDto(
     string StageName,
     int StageOrder,
     string? Icon,
+    string? Recommendations,
     DateOnly StartedAt,
     DateOnly? EndedAt,
     string? Observations,

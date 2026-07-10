@@ -49,7 +49,8 @@ public class IrrigationController : ControllerBase
     {
         var command = new CreateIrrigationCommand(
             cropId, request.Method, request.VolumeLiters,
-            request.DurationMin, request.AppliedAt, request.Notes, request.TaskId);
+            request.DurationMin, request.AppliedAt, request.Notes,
+            request.Cost, request.TaskId, request.OccurrenceId);
 
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetById), new { cropId, id = result.Id }, result);
@@ -61,7 +62,7 @@ public class IrrigationController : ControllerBase
     {
         var command = new UpdateIrrigationCommand(
             cropId, id, request.Method, request.VolumeLiters,
-            request.DurationMin, request.AppliedAt, request.Notes);
+            request.DurationMin, request.AppliedAt, request.Notes, request.Cost);
 
         var result = await _mediator.Send(command);
         return result is null ? NotFound() : Ok(result);

@@ -30,7 +30,7 @@ public class GetIrrigationsQueryHandler(
             .Take(request.PageSize)
             .Select(i => new IrrigationDto(
                 i.Id, i.CropId, i.UserId, i.Method,
-                i.VolumeLiters, i.DurationMin,
+                i.VolumeLiters, i.DurationMin, i.Cost,
                 i.AppliedAt, i.Notes, i.CreatedAt))
             .ToListAsync(cancellationToken);
 

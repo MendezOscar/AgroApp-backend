@@ -26,7 +26,8 @@ public record CreateFertilizationRequest(
     DateTime AppliedAt,
     DateOnly? NextApplication,
     string? Notes,
-    Guid? TaskId = null
+    Guid? TaskId = null,
+    Guid? OccurrenceId = null
 );
 
 public record UpdateFertilizationRequest(

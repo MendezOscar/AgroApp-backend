@@ -44,7 +44,8 @@ public class LaborController : ControllerBase
         var command = new CreateLaborCommand(
             cropId, request.ActivityType, request.HoursWorked,
             request.WorkersCount, request.Cost,
-            request.PerformedAt, request.Notes, request.TaskId);
+            request.PerformedAt, request.Notes,
+            request.TaskId, request.OccurrenceId);
 
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetById), new { cropId, id = result.Id }, result);

@@ -45,6 +45,18 @@ public class GetMonthlyCostHistoryQueryHandler(
             })
             .ToListAsync(cancellationToken);
 
+        var irrigationByMonth = await _context.IrrigationLogs
+            .Where(i => i.Crop.Plot.Farm.TenantId == _currentUser.TenantId
+                     && i.AppliedAt >= since)
+            .GroupBy(i => new { i.AppliedAt.Year, i.AppliedAt.Month })
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                Cost = g.Sum(i => i.Cost ?? 0)
+            })
+            .ToListAsync(cancellationToken);
+
         var result = new List<MonthlyCostDto>();
         for (var i = request.Months - 1; i >= 0; i--)
         {
@@ -56,9 +68,13 @@ public class GetMonthlyCostHistoryQueryHandler(
             var laborCost = laborByMonth
                 .FirstOrDefault(l => l.Year == month.Year && l.Month == month.Month)
                 ?.Cost ?? 0;
+            var irrigationCost = irrigationByMonth
+                .FirstOrDefault(w => w.Year == month.Year && w.Month == month.Month)
+                ?.Cost ?? 0;
 
             result.Add(new MonthlyCostDto(
-                month.Year, month.Month, fertCost, laborCost, fertCost + laborCost));
+                month.Year, month.Month, fertCost, laborCost, irrigationCost,
+                fertCost + laborCost + irrigationCost));
         }
 
         return result;

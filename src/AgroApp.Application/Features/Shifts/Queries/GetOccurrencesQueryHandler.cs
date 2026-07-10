@@ -54,6 +54,7 @@ public class GetOccurrencesQueryHandler
                 o.Template.Priority.ToString(),
                 o.AssignedTo, o.Assignee != null ? o.Assignee.Name : null,
                 o.Template.Plot != null ? o.Template.Plot.Name : null,
+                o.Template.CropId,
                 o.Template.Crop != null ? o.Template.Crop.CropType : null,
                 o.ScheduledDate, o.Shift.ToString(),
                 o.Status.ToString(), o.CompletedAt, o.Notes))

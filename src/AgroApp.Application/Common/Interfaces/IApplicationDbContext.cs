@@ -18,7 +18,6 @@ public interface IApplicationDbContext
     DbSet<Alert> Alerts { get; }
     DbSet<AlertRule> AlertRules { get; }
     DbSet<CropImage> CropImages { get; }
-    DbSet<CostEntry> CostEntries { get; }
     DbSet<FcmToken> FcmTokens { get; }
     DbSet<TaskItem> Tasks { get; }
     DbSet<TaskTemplate> TaskTemplates { get; }

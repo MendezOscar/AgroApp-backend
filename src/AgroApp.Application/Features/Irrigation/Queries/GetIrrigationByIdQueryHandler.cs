@@ -24,7 +24,7 @@ public class GetIrrigationByIdQueryHandler : IRequestHandler<GetIrrigationByIdQu
                      && i.Crop.Plot.Farm.TenantId == _currentUser.TenantId)
             .Select(i => new IrrigationDto(
                 i.Id, i.CropId, i.UserId, i.Method,
-                i.VolumeLiters, i.DurationMin,
+                i.VolumeLiters, i.DurationMin, i.Cost,
                 i.AppliedAt, i.Notes, i.CreatedAt))
             .FirstOrDefaultAsync(cancellationToken);
     }

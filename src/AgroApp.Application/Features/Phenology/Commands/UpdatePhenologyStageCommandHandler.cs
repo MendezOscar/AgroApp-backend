@@ -44,7 +44,7 @@ public class UpdatePhenologyStageCommandHandler
         return new PhenologyStageDto(
             stage.Id, stage.CropId, stage.TemplateId,
             stage.StageName, stage.StageOrder,
-            stage.Template?.Icon,
+            stage.Template?.Icon, stage.Template?.Recommendations,
             stage.StartedAt, stage.EndedAt,
             stage.Observations, stage.IsCustom,
             stage.EndedAt == null,

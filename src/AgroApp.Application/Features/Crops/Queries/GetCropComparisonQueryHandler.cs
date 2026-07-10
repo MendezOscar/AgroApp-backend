@@ -27,7 +27,8 @@ public class GetCropComparisonQueryHandler(
                 c.Variety,
                 PlotName = c.Plot.Name,
                 c.Status,
-                c.YieldKg
+                c.YieldKg,
+                c.Plot.AreaHa
             })
             .ToListAsync(cancellationToken);
 
@@ -45,14 +46,27 @@ public class GetCropComparisonQueryHandler(
             .Select(g => new { CropId = g.Key, Cost = g.Sum(l => l.Cost ?? 0) })
             .ToDictionaryAsync(x => x.CropId, x => x.Cost, cancellationToken);
 
+        var irrigationCostByCrop = await _context.IrrigationLogs
+            .Where(i => i.Crop.Plot.FarmId == request.FarmId
+                     && i.Crop.Plot.Farm.TenantId == _currentUser.TenantId)
+            .GroupBy(i => i.CropId)
+            .Select(g => new { CropId = g.Key, Cost = g.Sum(i => i.Cost ?? 0) })
+            .ToDictionaryAsync(x => x.CropId, x => x.Cost, cancellationToken);
+
         return crops.Select(c =>
         {
             var totalCost = fertCostByCrop.GetValueOrDefault(c.Id)
-                           + laborCostByCrop.GetValueOrDefault(c.Id);
+                           + laborCostByCrop.GetValueOrDefault(c.Id)
+                           + irrigationCostByCrop.GetValueOrDefault(c.Id);
+
+            var areaHa = c.AreaHa is > 0 ? c.AreaHa : null;
 
             return new CropComparisonDto(
                 c.Id, c.CropType, c.Variety, c.PlotName,
-                c.Status.ToString(), c.YieldKg, totalCost);
+                c.Status.ToString(), c.YieldKg, totalCost,
+                c.AreaHa,
+                areaHa is null ? null : c.YieldKg / areaHa,
+                areaHa is null ? null : totalCost / areaHa);
         }).ToList();
     }
 }

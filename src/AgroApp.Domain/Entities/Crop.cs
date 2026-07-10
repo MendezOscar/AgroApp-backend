@@ -26,6 +26,5 @@ namespace AgroApp.Domain.Entities
         public ICollection<FertilizationLog> FertilizationLogs { get; set; } = [];
         public ICollection<LaborLog> LaborLogs { get; set; } = [];
         public ICollection<CropImage> CropImages { get; set; } = [];
-        public ICollection<CostEntry> CostEntries { get; set; } = [];
     }
 }

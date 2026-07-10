@@ -14,6 +14,7 @@ namespace AgroApp.Domain.Entities
         public string Method { get; set; } = string.Empty;
         public decimal? VolumeLiters { get; set; }
         public int? DurationMin { get; set; }
+        public decimal? Cost { get; set; }
         public DateTime AppliedAt { get; set; }
         public string? Notes { get; set; }
 

@@ -10,5 +10,6 @@ public record UpdateIrrigationCommand(
     decimal? VolumeLiters,
     int? DurationMin,
     DateTime AppliedAt,
-    string? Notes
+    string? Notes,
+    decimal? Cost = null
 ) : IRequest<IrrigationDto?>;

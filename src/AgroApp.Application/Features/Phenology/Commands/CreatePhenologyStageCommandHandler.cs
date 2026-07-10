@@ -79,7 +79,7 @@ public class CreatePhenologyStageCommandHandler
         return new PhenologyStageDto(
             stage.Id, stage.CropId, stage.TemplateId,
             stage.StageName, stage.StageOrder,
-            template?.Icon,
+            template?.Icon, template?.Recommendations,
             stage.StartedAt, stage.EndedAt,
             stage.Observations, stage.IsCustom,
             true, 0, stage.CreatedAt);

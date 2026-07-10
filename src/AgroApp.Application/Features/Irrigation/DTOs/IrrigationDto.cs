@@ -7,6 +7,7 @@ public record IrrigationDto(
     string Method,
     decimal? VolumeLiters,
     int? DurationMin,
+    decimal? Cost,
     DateTime AppliedAt,
     string? Notes,
     DateTime CreatedAt
@@ -18,7 +19,9 @@ public record CreateIrrigationRequest(
     int? DurationMin,
     DateTime AppliedAt,
     string? Notes,
-    Guid? TaskId = null
+    decimal? Cost = null,
+    Guid? TaskId = null,
+    Guid? OccurrenceId = null
 );
 
 public record UpdateIrrigationRequest(
@@ -26,5 +29,6 @@ public record UpdateIrrigationRequest(
     decimal? VolumeLiters,
     int? DurationMin,
     DateTime AppliedAt,
-    string? Notes
+    string? Notes,
+    decimal? Cost = null
 );

@@ -20,7 +20,8 @@ public record CreateLaborRequest(
     decimal? Cost,
     DateTime PerformedAt,
     string? Notes,
-    Guid? TaskId = null
+    Guid? TaskId = null,
+    Guid? OccurrenceId = null
 );
 
 public record UpdateLaborRequest(

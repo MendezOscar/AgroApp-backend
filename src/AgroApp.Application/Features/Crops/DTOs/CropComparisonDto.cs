@@ -7,5 +7,8 @@ public record CropComparisonDto(
     string PlotName,
     string Status,
     decimal? YieldKg,
-    decimal TotalCost
+    decimal TotalCost,
+    decimal? AreaHa,
+    decimal? YieldPerHa,
+    decimal? CostPerHa
 );

@@ -50,6 +50,24 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
                 throw new InvalidOperationException("La tarea ya está completada.");
         }
 
+        TaskOccurrence? occurrence = null;
+        if (request.OccurrenceId is not null)
+        {
+            occurrence = await _context.TaskOccurrences
+                .Include(o => o.Template)
+                .FirstOrDefaultAsync(o => o.Id == request.OccurrenceId
+                                       && o.TenantId == _currentUser.TenantId, cancellationToken);
+
+            if (occurrence is null)
+                throw new InvalidOperationException("Turno no encontrado.");
+            if (occurrence.Template.TaskType != TaskType.Fertilization)
+                throw new InvalidOperationException("El turno no es de tipo Fertilización.");
+            if (occurrence.Template.CropId != request.CropId)
+                throw new InvalidOperationException("El turno no corresponde a este cultivo.");
+            if (occurrence.Status == Domain.Enums.TaskStatus.Completed)
+                throw new InvalidOperationException("El turno ya está completado.");
+        }
+
         var log = new FertilizationLog
         {
             CropId = request.CropId,
@@ -74,6 +92,12 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
             task.CompletedAt = DateTime.UtcNow;
         }
 
+        if (occurrence is not null)
+        {
+            occurrence.Status = Domain.Enums.TaskStatus.Completed;
+            occurrence.CompletedAt = DateTime.UtcNow;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         if (task is not null)
@@ -86,6 +110,19 @@ public class CreateFertilizationCommandHandler : IRequestHandler<CreateFertiliza
                 {
                     ["taskId"] = task.Id.ToString(),
                     ["type"] = "task_completed"
+                });
+        }
+
+        if (occurrence is not null)
+        {
+            await _notifications.SendToUserAsync(
+                occurrence.Template.CreatedBy,
+                title: "✅ Turno completado",
+                body: $"Fertilización registrada: {occurrence.Template.Title}",
+                data: new Dictionary<string, string>
+                {
+                    ["occurrenceId"] = occurrence.Id.ToString(),
+                    ["type"] = "shift_completed"
                 });
         }
 
