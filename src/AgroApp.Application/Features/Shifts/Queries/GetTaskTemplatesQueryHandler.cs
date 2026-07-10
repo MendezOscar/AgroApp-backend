@@ -38,6 +38,7 @@ public class GetTaskTemplatesQueryHandler
                 t.TaskType.ToString(), t.Priority.ToString(),
                 t.Shift.ToString(), t.RecurrenceType.ToString(),
                 t.WeekDays, t.StartDate, t.EndDate,
+                t.RequiredPhenologyStage,
                 t.IsActive, t.Occurrences.Count, t.CreatedAt))
             .ToListAsync(cancellationToken);
     }

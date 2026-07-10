@@ -18,6 +18,7 @@ public class TaskTemplate
     public string? WeekDays { get; set; } // "1,3,5"
     public DateOnly StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
+    public string? RequiredPhenologyStage { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

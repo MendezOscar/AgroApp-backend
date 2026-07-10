@@ -17,6 +17,7 @@ public record TaskTemplateDto(
     string? WeekDays,
     DateOnly StartDate,
     DateOnly? EndDate,
+    string? RequiredPhenologyStage,
     bool IsActive,
     int OccurrenceCount,
     DateTime CreatedAt
@@ -51,7 +52,8 @@ public record CreateTaskTemplateRequest(
     string RecurrenceType,
     string? WeekDays,
     DateOnly StartDate,
-    DateOnly? EndDate
+    DateOnly? EndDate,
+    string? RequiredPhenologyStage
 );
 
 public record AssignOccurrenceRequest(

@@ -14,5 +14,6 @@ public record CreateTaskTemplateCommand(
     string RecurrenceType,
     string? WeekDays,
     DateOnly StartDate,
-    DateOnly? EndDate
+    DateOnly? EndDate,
+    string? RequiredPhenologyStage
 ) : IRequest<TaskTemplateDto>;

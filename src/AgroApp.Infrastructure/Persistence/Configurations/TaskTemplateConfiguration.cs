@@ -18,6 +18,8 @@ public class TaskTemplateConfiguration : IEntityTypeConfiguration<TaskTemplate>
         builder.Property(x => x.WeekDays).HasMaxLength(20).HasColumnName("week_days");
         builder.Property(x => x.StartDate).HasColumnName("start_date");
         builder.Property(x => x.EndDate).HasColumnName("end_date");
+        builder.Property(x => x.RequiredPhenologyStage)
+            .HasMaxLength(100).HasColumnName("required_phenology_stage");
         builder.Property(x => x.CreatedAt).HasColumnName("created_at");
         builder.Property(x => x.UpdatedAt).HasColumnName("updated_at");
         builder.Property(x => x.CreatedBy).HasColumnName("created_by");

@@ -8,46 +8,45 @@ using Microsoft.Extensions.Logging;
 namespace AgroApp.Infrastructure.Services;
 
 /// <summary>
-/// Genera recordatorios de riego ("hace N días que no riegas el cultivo X")
-/// una vez al día para todos los tenants.
+/// Genera alertas de helada y de lluvia pronosticada (sugerencia de
+/// suspender riego) para cada finca con coordenadas, cada 12 horas.
 /// </summary>
-public class IrrigationReminderBackgroundService(
+public class WeatherAlertBackgroundService(
     IServiceScopeFactory scopeFactory,
     IConfiguration configuration,
-    ILogger<IrrigationReminderBackgroundService> logger) : BackgroundService
+    ILogger<WeatherAlertBackgroundService> logger) : BackgroundService
 {
-    private static readonly TimeSpan Interval = TimeSpan.FromHours(24);
+    private static readonly TimeSpan Interval = TimeSpan.FromHours(12);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var thresholdDays = configuration.GetValue("Reminders:IrrigationThresholdDays", 7);
-        var soilHumidityThresholdPct = configuration.GetValue("Reminders:SoilHumidityThresholdPct", 30m);
+        var frostThreshold = configuration.GetValue("Weather:FrostThresholdC", 2m);
+        var rainThreshold = configuration.GetValue("Weather:RainThresholdMm", 10m);
 
         using var timer = new PeriodicTimer(Interval);
         do
         {
-            await RunOnceAsync(thresholdDays, soilHumidityThresholdPct, stoppingToken);
+            await RunOnceAsync(frostThreshold, rainThreshold, stoppingToken);
         } while (!stoppingToken.IsCancellationRequested
                  && await timer.WaitForNextTickAsync(stoppingToken));
     }
 
     private async Task RunOnceAsync(
-        int thresholdDays, decimal soilHumidityThresholdPct, CancellationToken cancellationToken)
+        decimal frostThreshold, decimal rainThreshold, CancellationToken cancellationToken)
     {
         try
         {
             using var scope = scopeFactory.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var created = await mediator.Send(
-                new GenerateIrrigationRemindersCommand(thresholdDays, soilHumidityThresholdPct),
-                cancellationToken);
+                new GenerateWeatherAlertsCommand(frostThreshold, rainThreshold), cancellationToken);
 
             if (created > 0)
-                logger.LogInformation("Generados {Count} recordatorios de riego", created);
+                logger.LogInformation("Generadas {Count} alertas de clima", created);
         }
         catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogError(ex, "Error generando recordatorios de riego");
+            logger.LogError(ex, "Error generando alertas de clima");
         }
     }
 }

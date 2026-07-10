@@ -45,6 +45,16 @@ public class GetOccurrencesQueryHandler
                 o.ScheduledDate <= DateOnly.FromDateTime(
                     DateTime.UtcNow.AddDays(7)));
 
+        // Si el turno exige una etapa fenológica, ocultar las ocurrencias
+        // mientras el cultivo no esté en esa etapa (se generan todas de una
+        // vez al crear el turno; la etapa del cultivo cambia después).
+        query = query.Where(o =>
+            o.Template.RequiredPhenologyStage == null ||
+            _context.PhenologyStages.Any(s =>
+                s.CropId == o.Template.CropId &&
+                s.StageName == o.Template.RequiredPhenologyStage &&
+                s.EndedAt == null));
+
         return await query
             .OrderBy(o => o.ScheduledDate)
             .ThenBy(o => o.Shift)

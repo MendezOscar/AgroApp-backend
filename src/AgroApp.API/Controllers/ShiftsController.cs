@@ -40,7 +40,8 @@ public class ShiftsController : ControllerBase
             request.Title, request.Description,
             request.TaskType, request.Priority,
             request.Shift, request.RecurrenceType,
-            request.WeekDays, request.StartDate, request.EndDate));
+            request.WeekDays, request.StartDate, request.EndDate,
+            request.RequiredPhenologyStage));
         return Ok(result);
     }
 

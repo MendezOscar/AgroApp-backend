@@ -25,6 +25,10 @@ public class CreateTaskTemplateCommandHandler
         CreateTaskTemplateCommand request,
         CancellationToken cancellationToken)
     {
+        if (request.RequiredPhenologyStage is not null && request.CropId is null)
+            throw new InvalidOperationException(
+                "Solo se puede exigir una etapa fenológica si el turno está ligado a un cultivo.");
+
         var template = new TaskTemplate
         {
             TenantId = _currentUser.TenantId,
@@ -41,6 +45,7 @@ public class CreateTaskTemplateCommandHandler
             WeekDays = request.WeekDays,
             StartDate = request.StartDate,
             EndDate = request.EndDate,
+            RequiredPhenologyStage = request.RequiredPhenologyStage,
         };
 
         _context.TaskTemplates.Add(template);
@@ -59,6 +64,7 @@ public class CreateTaskTemplateCommandHandler
             template.TaskType.ToString(), template.Priority.ToString(),
             template.Shift.ToString(), template.RecurrenceType.ToString(),
             template.WeekDays, template.StartDate, template.EndDate,
+            template.RequiredPhenologyStage,
             template.IsActive, occurrences.Count, template.CreatedAt);
     }
 }

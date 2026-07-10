@@ -29,6 +29,7 @@ public class GenerateIrrigationRemindersCommandHandler(
                 c.Id,
                 c.CropType,
                 c.PlantedAt,
+                c.PlotId,
                 c.Plot.Farm.TenantId
             })
             .ToListAsync(cancellationToken);
@@ -37,6 +38,18 @@ public class GenerateIrrigationRemindersCommandHandler(
             .GroupBy(i => i.CropId)
             .Select(g => new { CropId = g.Key, LastAppliedAt = g.Max(i => i.AppliedAt) })
             .ToDictionaryAsync(x => x.CropId, x => x.LastAppliedAt, cancellationToken);
+
+        var since24h = now.AddHours(-24);
+        var latestSoilHumidityByPlot = (await _context.SensorReadings
+            .Where(r => r.RecordedAt >= since24h && r.HumiditySoil != null)
+            .GroupBy(r => r.Device.PlotId)
+            .Select(g => new
+            {
+                PlotId = g.Key,
+                Humidity = g.OrderByDescending(r => r.RecordedAt).First().HumiditySoil
+            })
+            .ToListAsync(cancellationToken))
+            .ToDictionary(x => x.PlotId, x => x.Humidity);
 
         var since = now.AddDays(-request.ThresholdDays);
         var recentlyRemindedCropIds = (await _context.Alerts
@@ -59,10 +72,16 @@ public class GenerateIrrigationRemindersCommandHandler(
                 : crop.PlantedAt.ToDateTime(TimeOnly.MinValue);
 
             var daysSince = (now - baseline).Days;
-            if (daysSince < request.ThresholdDays)
+            var hasLowSoilHumidity =
+                latestSoilHumidityByPlot.TryGetValue(crop.PlotId, out var soilHumidity)
+                && soilHumidity < request.SoilHumidityThresholdPct;
+
+            if (daysSince < request.ThresholdDays && !hasLowSoilHumidity)
                 continue;
 
-            var message = $"Hace {daysSince} días que no riegas el cultivo {crop.CropType}.";
+            var message = hasLowSoilHumidity
+                ? $"Humedad de suelo baja ({soilHumidity:0.#}%) en el cultivo {crop.CropType}."
+                : $"Hace {daysSince} días que no riegas el cultivo {crop.CropType}.";
 
             _context.Alerts.Add(new Alert
             {
